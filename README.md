@@ -18,12 +18,12 @@ A lightweight standalone extension plugin for UltiMaker Cura (Cura 5.x) that dis
 
 ## Installation
 
-### Method 1: Drag & Drop (`.curapackage`)
+### Method 1: Drag & Drop (Recommended)
 1. Download `LayerTimingPlugin.curapackage`.
 2. Drag and drop the `.curapackage` file directly into the Cura application window.
 3. Restart Cura when prompted.
 
-### Method 2: Direct Folder Copy (Recommended)
+### Method 2: Direct Folder Copy 
 1. Download or extract the `LayerTimingPlugin` folder.
 2. Copy the `LayerTimingPlugin` folder into your Cura plugins directory:
    - **Windows:** `%APPDATA%\cura\<version>\plugins\LayerTimingPlugin`  
