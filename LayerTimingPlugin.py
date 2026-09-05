@@ -123,42 +123,42 @@ class LayerTimingPlugin(QObject, Extension):
         return None
 
     def _attachHUDToStage(self) -> None:
-        app = CuraApplication.getInstance()
-        main_window = app.getMainWindow()
-        if main_window is None:
-            return
-
-        content_item = main_window.contentItem() if callable(getattr(main_window, "contentItem", None)) else getattr(main_window, "contentItem", main_window)
-        if content_item is None:
-            return
-
-        sim_view_item = self._findSimulationViewComponent(content_item)
-        if sim_view_item is None:
-            # If not found yet and in preview stage, retry briefly
-            if self.isPreviewActive:
-                self._attach_timer.start()
-            return
-
-        # Find playButton and layerSlider inside SimulationViewMainComponent
-        play_button = None
-        layer_slider = None
-        if hasattr(sim_view_item, "childItems"):
-            for child in sim_view_item.childItems():
-                if hasattr(child, "property"):
-                    if child.property("trackThickness") is not None and child.property("upperValue") is not None:
-                        layer_slider = child
-                    elif child.property("iconSource") is not None or (child.property("hoverColor") is not None and child.property("color") is not None):
-                        play_button = child
-
-        plugin_path = PluginRegistry.getInstance().getPluginPath("LayerTimingPlugin")
-        if not plugin_path:
-            return
-
-        qml_path = os.path.join(plugin_path, "LayerTimingHUD.qml")
-        if not os.path.exists(qml_path):
-            return
-
         try:
+            app = CuraApplication.getInstance()
+            main_window = app.getMainWindow()
+            if main_window is None:
+                return
+
+            content_item = main_window.contentItem() if callable(getattr(main_window, "contentItem", None)) else getattr(main_window, "contentItem", main_window)
+            if content_item is None:
+                return
+
+            sim_view_item = self._findSimulationViewComponent(content_item)
+            if sim_view_item is None:
+                # If not found yet and in preview stage, retry briefly
+                if self.isPreviewActive:
+                    self._attach_timer.start()
+                return
+
+            # Find playButton and layerSlider inside SimulationViewMainComponent
+            play_button = None
+            layer_slider = None
+            if hasattr(sim_view_item, "childItems"):
+                for child in sim_view_item.childItems():
+                    if hasattr(child, "property"):
+                        if child.property("trackThickness") is not None and child.property("upperValue") is not None:
+                            layer_slider = child
+                        elif child.property("iconSource") is not None or (child.property("hoverColor") is not None and child.property("color") is not None):
+                            play_button = child
+
+            plugin_path = PluginRegistry.getInstance().getPluginPath("LayerTimingPlugin")
+            if not plugin_path:
+                return
+
+            qml_path = os.path.join(plugin_path, "LayerTimingHUD.qml")
+            if not os.path.exists(qml_path):
+                return
+
             if self._hud_view is None:
                 self._hud_view = app.createQmlComponent(qml_path, {"manager": self})
 
@@ -166,17 +166,16 @@ class LayerTimingPlugin(QObject, Extension):
                 if hasattr(self._hud_view, "setParentItem"):
                     self._hud_view.setParentItem(sim_view_item)
                 self._hud_view.setProperty("parent", sim_view_item)
-                Logger.log("i", "LayerTimingPlugin HUD successfully parented to SimulationViewMainComponent.")
+
+            if self._play_button_item is not play_button:
+                self._play_button_item = play_button
+                self.playButtonItemChanged.emit()
+
+            if self._layer_slider_item is not layer_slider:
+                self._layer_slider_item = layer_slider
+                self.layerSliderItemChanged.emit()
         except Exception as e:
-            Logger.log("e", f"Failed to attach LayerTimingPlugin HUD: {e}")
-
-        if self._play_button_item != play_button:
-            self._play_button_item = play_button
-            self.playButtonItemChanged.emit()
-
-        if self._layer_slider_item != layer_slider:
-            self._layer_slider_item = layer_slider
-            self.layerSliderItemChanged.emit()
+            Logger.log("e", f"LayerTimingPlugin._attachHUDToStage error: {e}")
 
     def _updateTimingCache(self) -> None:
         """Parses and caches layer timing information from gcode_dict or GCodeListDecorator."""
