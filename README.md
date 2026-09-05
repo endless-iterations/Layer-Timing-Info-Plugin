@@ -1,3 +1,4 @@
+![Layer Timing Info Preview](assets/example.jpg)
 # Layer Timing Info Plugin for UltiMaker Cura
 
 A lightweight standalone extension plugin for UltiMaker Cura (Cura 5.x) that displays a HUD overlay during the **Preview Stage** linked directly to the layer slider.
