@@ -23,8 +23,6 @@ class LayerTimingPlugin(QObject, Extension):
 
     timingChanged = pyqtSignal()
     currentLayerChanged = pyqtSignal()
-    playButtonItemChanged = pyqtSignal()
-    layerSliderItemChanged = pyqtSignal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -38,8 +36,6 @@ class LayerTimingPlugin(QObject, Extension):
         self._current_layer: int = 0
         self._hud_view = None
         self._connected_view = None
-        self._play_button_item = None
-        self._layer_slider_item = None
 
         # Update debounce timer
         self._update_timer = QTimer()
@@ -141,16 +137,6 @@ class LayerTimingPlugin(QObject, Extension):
                 return
 
             # Find playButton and layerSlider inside SimulationViewMainComponent
-            play_button = None
-            layer_slider = None
-            if hasattr(sim_view_item, "childItems"):
-                for child in sim_view_item.childItems():
-                    if hasattr(child, "property"):
-                        if child.property("trackThickness") is not None and child.property("upperValue") is not None:
-                            layer_slider = child
-                        elif child.property("iconSource") is not None or (child.property("hoverColor") is not None and child.property("color") is not None):
-                            play_button = child
-
             plugin_path = PluginRegistry.getInstance().getPluginPath("LayerTimingPlugin")
             if not plugin_path:
                 return
@@ -166,14 +152,6 @@ class LayerTimingPlugin(QObject, Extension):
                 if hasattr(self._hud_view, "setParentItem"):
                     self._hud_view.setParentItem(sim_view_item)
                 self._hud_view.setProperty("parent", sim_view_item)
-
-            if self._play_button_item is not play_button:
-                self._play_button_item = play_button
-                self.playButtonItemChanged.emit()
-
-            if self._layer_slider_item is not layer_slider:
-                self._layer_slider_item = layer_slider
-                self.layerSliderItemChanged.emit()
         except Exception as e:
             Logger.log("e", f"LayerTimingPlugin._attachHUDToStage error: {e}")
 
@@ -275,14 +253,6 @@ class LayerTimingPlugin(QObject, Extension):
             parts.append(f"{secs}s")
 
         return " ".join(parts)
-
-    @pyqtProperty(QObject, notify=playButtonItemChanged)
-    def playButtonItem(self) -> Optional[QObject]:
-        return self._play_button_item
-
-    @pyqtProperty(QObject, notify=layerSliderItemChanged)
-    def layerSliderItem(self) -> Optional[QObject]:
-        return self._layer_slider_item
 
     @pyqtProperty(bool, notify=timingChanged)
     def hasTimingInfo(self) -> bool:
