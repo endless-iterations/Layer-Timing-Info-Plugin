@@ -1,7 +1,7 @@
 {
     "name": "Layer Timing Info",
     "author": "endless-iterations",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Displays selected layer print duration, elapsed print time, and remaining print time in the Preview.",
     "api": 8,
     "supported_sdk_versions": [
