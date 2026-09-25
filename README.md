@@ -4,6 +4,12 @@ The user PartySausage (https://github.com/PartySausage) took this idea and turne
 https://github.com/Ultimaker/Cura/issues/11742#issuecomment-5640864070
 
 
+
+
+
+
+
+
 ![Layer Timing Info Preview](images/example.jpg)
 # Layer Timing Info Plugin for UltiMaker Cura
 
